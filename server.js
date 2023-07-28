@@ -182,7 +182,7 @@ async function handleOPTIONS(request) {
     res.end(result.body);
   });
 
-  server.listen(8888, () => {
-    console.log(`Server listening on port 8888`);
+  server.listen(3000, () => {
+    console.log(`Server listening on port 3000`);
   });
 })();
