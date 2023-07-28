@@ -4,7 +4,7 @@
   "description": "<a href=\"./README_en.md\">English</a> | <a href=\"./README.md\">中文</a>",
   "main": "cf-openai-azure-proxy.js",
   "scripts": {
-    "start": "pm2 start server.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -19,5 +19,8 @@
   "homepage": "https://github.com/enginner-lv/cf-openai-azure-proxy#readme",
   "dependencies": {
     "pm2": "^5.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
