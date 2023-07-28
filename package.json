@@ -1,0 +1,23 @@
+{
+  "name": "cf-openai-c-proxy",
+  "version": "1.0.0",
+  "description": "<a href=\"./README_en.md\">English</a> | <a href=\"./README.md\">中文</a>",
+  "main": "cf-openai-azure-proxy.js",
+  "scripts": {
+    "start": "pm2 start server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enginner-lv/cf-openai-azure-proxy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/enginner-lv/cf-openai-azure-proxy/issues"
+  },
+  "homepage": "https://github.com/enginner-lv/cf-openai-azure-proxy#readme",
+  "dependencies": {
+    "pm2": "^5.3.0"
+  }
+}
