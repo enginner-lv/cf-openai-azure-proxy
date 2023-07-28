@@ -182,7 +182,7 @@ async function handleOPTIONS(request) {
     res.end(result.body);
   });
 
-  server.listen(80, () => {
-    console.log(`Server listening on port 80`);
+  server.listen(8888, () => {
+    console.log(`Server listening on port 8888`);
   });
 })();
