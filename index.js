@@ -23,6 +23,9 @@ function bindBodyParser(req) {
     });
     req.on("end", () => {
       try {
+        if (buffer) {
+          reject();
+        }
         console.log("buffer", buffer);
         resolve(JSON.parse(buffer));
       } catch (error) {
@@ -60,6 +63,7 @@ async function handleRequest(request) {
 
     let body;
     if (request.method === "POST") {
+      console.log("request", request);
       body = await bindBodyParser(request);
     }
 
