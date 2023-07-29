@@ -33,85 +33,89 @@ function bindBodyParser(req) {
 }
 
 async function handleRequest(request) {
-  if (request.method === "OPTIONS") {
-    return handleOPTIONS(request);
-  }
-
-  const url = request.url;
-  console.log("url", url);
-  if (url.startsWith("//")) {
-    url = url.replace("/", "");
-  }
-  if (url === "/v1/chat/completions") {
-    var path = "chat/completions";
-  } else if (url === "/v1/completions") {
-    var path = "completions";
-  } else if (url === "/v1/models") {
-    return handleModels(request);
-  } else {
-    if (url === "/") {
-      return {body: "Proxy Azure OpenAi Successful ", status: 200};
+  try {
+    if (request.method === "OPTIONS") {
+      return handleOPTIONS(request);
     }
-    return {body: "404 Not Found", status: 404};
-  }
 
-  let body;
-  if (request.method === "POST") {
-    body = await bindBodyParser(request);
-  }
+    const url = request.url;
+    console.log("url", url);
+    if (url.startsWith("//")) {
+      url = url.replace("/", "");
+    }
+    if (url === "/v1/chat/completions") {
+      var path = "chat/completions";
+    } else if (url === "/v1/completions") {
+      var path = "completions";
+    } else if (url === "/v1/models") {
+      return handleModels(request);
+    } else {
+      if (url === "/") {
+        return {body: "Proxy Azure OpenAi Successful ", status: 200};
+      }
+      return {body: "404 Not Found", status: 404};
+    }
 
-  const modelName = body?.model;
-  const deployName = mapper[modelName] || "";
+    let body;
+    if (request.method === "POST") {
+      body = await bindBodyParser(request);
+    }
 
-  if (deployName === "") {
-    return {body: "Missing model mapper", status: 403};
-  }
-  const fetchAPI = `https://${resourceName}.openai.azure.com/openai/deployments/${deployName}/${path}?api-version=${apiVersion}`;
+    const modelName = body?.model;
+    const deployName = mapper[modelName] || "";
 
-  console.log("request.headers");
+    if (deployName === "") {
+      return {body: "Missing model mapper", status: 403};
+    }
+    const fetchAPI = `https://${resourceName}.openai.azure.com/openai/deployments/${deployName}/${path}?api-version=${apiVersion}`;
 
-  const authKey = request.headers.authorization;
-  if (!authKey) {
-    return {body: "Not allowed", status: 403};
-  }
+    console.log("request.headers");
 
-  const options = {
-    method: request.method,
-    headers: {
-      "Content-Type": "application/json",
-      "api-key": authKey.replace("Bearer ", ""),
-    },
-  };
+    const authKey = request.headers.authorization;
+    if (!authKey) {
+      return {body: "Not allowed", status: 403};
+    }
 
-  if (typeof body === "object") {
-    options.body = JSON.stringify(body);
-  }
+    const options = {
+      method: request.method,
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": authKey.replace("Bearer ", ""),
+      },
+    };
 
-  const response = await new Promise((resolve, reject) => {
-    const req = https.request(fetchAPI, options, (res) => {
-      const chunks = [];
-      res.on("data", (chunk) => chunks.push(chunk));
-      res.on("end", () =>
-        resolve({
-          headers: res.headers,
-          body: Buffer.concat(chunks),
-          status: res.statusCode,
-        })
-      );
+    if (typeof body === "object") {
+      options.body = JSON.stringify(body);
+    }
+
+    const response = await new Promise((resolve, reject) => {
+      const req = https.request(fetchAPI, options, (res) => {
+        const chunks = [];
+        res.on("data", (chunk) => chunks.push(chunk));
+        res.on("end", () =>
+          resolve({
+            headers: res.headers,
+            body: Buffer.concat(chunks),
+            status: res.statusCode,
+          })
+        );
+      });
+      req.on("error", reject);
+      if (options.body) {
+        req.write(options.body);
+      }
+      req.end();
     });
-    req.on("error", reject);
-    if (options.body) {
-      req.write(options.body);
-    }
-    req.end();
-  });
 
-  // Set response headers
-  response.headers["access-control-allow-origin"] = "*";
+    // Set response headers
+    response.headers["access-control-allow-origin"] = "*";
 
-  console.log("response.body", response.body);
+    console.log("response.body", response.body);
 
-  return response;
+    return response;
+  } catch (err) {
+    return {body: err, status: 400};
+  }
 }
 
 function sleep(ms) {
