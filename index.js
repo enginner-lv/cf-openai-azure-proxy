@@ -56,10 +56,14 @@ async function handleRequest(request) {
       return {body: "404 Not Found", status: 404};
     }
 
+    console.log("bindBodyParser before ...");
+
     let body;
     if (request.method === "POST") {
       body = await bindBodyParser(request);
     }
+
+    console.log("bindBodyParser after ...", body);
 
     const modelName = body?.model;
     const deployName = mapper[modelName] || "";
