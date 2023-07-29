@@ -49,6 +49,9 @@ async function handleRequest(request) {
   } else if (url === "/v1/models") {
     return handleModels(request);
   } else {
+    if (url === "/") {
+      return {body: "Proxy Azure OpenAi Successful ", status: 200};
+    }
     return {body: "404 Not Found", status: 404};
   }
 
@@ -56,8 +59,6 @@ async function handleRequest(request) {
   if (request.method === "POST") {
     body = await bindBodyParser(request);
   }
-
-  console.log("body", body);
 
   const modelName = body?.model;
   const deployName = mapper[modelName] || "";
@@ -173,7 +174,7 @@ async function handleOPTIONS(request) {
     console.log("result", result);
 
     // Set response headers
-    Object.entries(result.headers).forEach(([key, value]) =>
+    Object.entries(result.headers ?? {}).forEach(([key, value]) =>
       res.setHeader(key, value)
     );
 
