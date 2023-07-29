@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/enginner-lv/cf-openai-azure-proxy#readme",
   "dependencies": {
+    "@vercel/node": "^2.15.6",
     "pm2": "^5.3.0"
   },
   "devDependencies": {
